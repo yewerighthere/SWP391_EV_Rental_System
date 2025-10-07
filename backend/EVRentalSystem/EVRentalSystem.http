@@ -1,0 +1,6 @@
+@EVRentalSystem_HostAddress = http://localhost:5137
+
+GET {{EVRentalSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
