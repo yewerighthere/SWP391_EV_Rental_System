@@ -1,0 +1,183 @@
+-- 1. Station
+CREATE TABLE Station (
+  station_id INT IDENTITY(1,1) PRIMARY KEY,
+  station_name NVARCHAR(255) NOT NULL,
+  address NVARCHAR(500) NOT NULL,
+  latitude DECIMAL(10,8) NULL,
+  longitude DECIMAL(11,8) NULL,
+  status NVARCHAR(10) DEFAULT 'ACTIVE' -- 'ACTIVE' / 'INACTIVE'
+);
+GO
+
+-- 2. Users
+CREATE TABLE Users (
+  user_id INT IDENTITY(1,1) PRIMARY KEY,
+  full_name NVARCHAR(255) NOT NULL,
+  user_name NVARCHAR(255) NOT NULL,
+  email NVARCHAR(255) UNIQUE NOT NULL,
+  phone_number NVARCHAR(20) NULL,
+  role NVARCHAR(10) DEFAULT 'RENTER', -- 'RENTER','STAFF','ADMIN'
+  status NVARCHAR(10) DEFAULT 'Active', -- 'Active','Inactive','Blocked'
+  password_hash NVARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT GETDATE()
+);
+GO
+
+-- 3. Vehicle
+CREATE TABLE Vehicle (
+  vehicle_id INT IDENTITY(1,1) PRIMARY KEY,
+  license_plate NVARCHAR(50) UNIQUE NOT NULL,
+  vehicle_type NVARCHAR(100) NOT NULL,
+  model NVARCHAR(100) NOT NULL,
+  release_year INT NULL,
+  battery_capacity INT NULL,
+  current_mileage INT DEFAULT 0,
+  img_car_url NVARCHAR(255) NULL,
+  condition NVARCHAR(20) DEFAULT 'good', -- good / in_repair / damaged
+  is_available BIT DEFAULT 1,
+  station_id INT NULL,
+  CONSTRAINT FK_Vehicle_Station FOREIGN KEY (station_id) REFERENCES Station(station_id)
+);
+GO
+
+-- 4. Renter
+CREATE TABLE Renter (
+  renter_id INT IDENTITY(1,1) PRIMARY KEY,
+  user_id INT NOT NULL,
+  CONSTRAINT FK_Renter_User FOREIGN KEY (user_id) REFERENCES Users(user_id),
+  url_cccd_cmnd NVARCHAR(255) NULL,
+  id_card_number NVARCHAR(50) UNIQUE NOT NULL,
+  url_driver_license NVARCHAR(255) NULL,
+  driver_license_number NVARCHAR(50) UNIQUE NOT NULL,
+  date_of_birth DATE NULL,
+  address NVARCHAR(255) NULL,
+  registration_date DATETIME DEFAULT GETDATE(),
+  status NVARCHAR(50) DEFAULT 'unverified'
+);
+GO
+
+-- 5. Staff
+CREATE TABLE Staff (
+  staff_id INT IDENTITY(1,1) PRIMARY KEY,
+  user_id INT NOT NULL,
+  CONSTRAINT FK_Staff_User FOREIGN KEY (user_id) REFERENCES Users(user_id),
+  position NVARCHAR(50) NOT NULL,
+  station_id INT NULL,
+  CONSTRAINT FK_Staff_Station FOREIGN KEY (station_id) REFERENCES Station(station_id)
+);
+GO
+
+-- 6. RentalOrder
+CREATE TABLE RentalOrder (
+  order_id INT IDENTITY(1,1) PRIMARY KEY,
+  renter_id INT NOT NULL,
+  vehicle_id INT NOT NULL,
+  pickup_station_id INT NULL,
+  return_station_id INT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NULL,
+  total_amount DECIMAL(10,2) DEFAULT 0,
+  deposit_amount DECIMAL(10,2) DEFAULT 0,
+  payment_status NVARCHAR(20) DEFAULT 'unpaid', -- paid, unpaid, refunded
+  status NVARCHAR(50) DEFAULT 'booked', -- booked, in_use, completed, canceled
+  CONSTRAINT FK_RentalOrder_Renter FOREIGN KEY (renter_id) REFERENCES Renter(renter_id),
+  CONSTRAINT FK_RentalOrder_Vehicle FOREIGN KEY (vehicle_id) REFERENCES Vehicle(vehicle_id),
+  CONSTRAINT FK_RentalOrder_PickupStation FOREIGN KEY (pickup_station_id) REFERENCES Station(station_id),
+  CONSTRAINT FK_RentalOrder_ReturnStation FOREIGN KEY (return_station_id) REFERENCES Station(station_id)
+);
+GO
+
+-- 7. Contract
+CREATE TABLE Contract (
+  contract_id INT IDENTITY(1,1) PRIMARY KEY,
+  order_id INT NOT NULL,
+  signed_date DATETIME DEFAULT GETDATE(),
+  contract_content TEXT NULL,
+  contract_pdf_url NVARCHAR(255) NULL,
+  CONSTRAINT FK_Contract_Order FOREIGN KEY (order_id) REFERENCES RentalOrder(order_id)
+);
+GO
+
+-- 8. Payment
+CREATE TABLE Payment (
+  payment_id INT IDENTITY(1,1) PRIMARY KEY,
+  order_id INT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  payment_method NVARCHAR(50) NULL, -- 'Cash','Card','E-Wallet'
+  payment_date DATETIME DEFAULT GETDATE(),
+  CONSTRAINT FK_Payment_Order FOREIGN KEY (order_id) REFERENCES RentalOrder(order_id)
+);
+GO
+
+-- 9. extra_fee
+CREATE TABLE extra_fee (
+  fee_id INT IDENTITY(1,1) PRIMARY KEY,
+  order_id INT NOT NULL,
+  fee_type NVARCHAR(100) NULL,
+  amount DECIMAL(10,2) DEFAULT 0,
+  description TEXT NULL,
+  CONSTRAINT FK_ExtraFee_Order FOREIGN KEY (order_id) REFERENCES RentalOrder(order_id)
+);
+GO
+
+-- 10. Handover
+CREATE TABLE Handover (
+  handover_id INT IDENTITY(1,1) PRIMARY KEY,
+  order_id INT NOT NULL,
+  staff_id INT NULL,
+  handover_type NVARCHAR(10) NOT NULL, -- 'pickup' / 'return'
+  condition_notes TEXT NULL,
+  photo_url NVARCHAR(255) NULL,
+  handover_timestamp DATETIME DEFAULT GETDATE(),
+  CONSTRAINT FK_Handover_Order FOREIGN KEY (order_id) REFERENCES RentalOrder(order_id),
+  CONSTRAINT FK_Handover_Staff FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
+);
+GO
+
+-- 11. Complaint
+CREATE TABLE Complaint (
+  complaint_id INT IDENTITY(1,1) PRIMARY KEY,
+  renter_id INT NOT NULL,
+  order_id INT NULL,
+  description TEXT NULL,
+  created_date DATETIME DEFAULT GETDATE(),
+  resolve_date DATETIME NULL,
+  resolve_by_staff_id INT NULL,
+  status NVARCHAR(50) NOT NULL DEFAULT 'pending',
+  CONSTRAINT FK_Complaint_Renter FOREIGN KEY (renter_id) REFERENCES Renter(renter_id),
+  CONSTRAINT FK_Complaint_Order FOREIGN KEY (order_id) REFERENCES RentalOrder(order_id),
+  CONSTRAINT FK_Complaint_ResolveBy FOREIGN KEY (resolve_by_staff_id) REFERENCES Staff(staff_id)
+);
+GO
+
+-- 12. Log_History
+CREATE TABLE Log_History (
+  log_id INT IDENTITY(1,1) PRIMARY KEY,
+  user_id INT NULL,
+  CONSTRAINT FK_LogHistory_User FOREIGN KEY (user_id) REFERENCES Users(user_id),
+  log_type NVARCHAR(50) NULL,
+  action TEXT NULL,
+  log_date DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- 13. Notification
+CREATE TABLE Notification (
+  notification_id INT IDENTITY(1,1) PRIMARY KEY,
+  user_id INT NOT NULL,
+  CONSTRAINT FK_Notification_User FOREIGN KEY (user_id) REFERENCES Users(user_id),
+  message TEXT NULL,
+  is_read BIT DEFAULT 0,
+  created_at DATETIME DEFAULT GETDATE()
+);
+GO
+
+-- 14. Image  (tập trung lưu ảnh, có thể liên kết bằng related_type/related_id)
+CREATE TABLE Image (
+  image_id INT IDENTITY(1,1) PRIMARY KEY,
+  related_type NVARCHAR(50) NOT NULL, -- 'Vehicle','Renter','Handover','Contract',...
+  related_id INT NOT NULL,
+  url NVARCHAR(255) NOT NULL,
+  uploaded_at DATETIME DEFAULT GETDATE()
+);
+GO
