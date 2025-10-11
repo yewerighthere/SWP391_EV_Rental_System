@@ -7,3 +7,5 @@ backend/EVRentalSystem/obj/Debug/net9.0/EVRentalSystem.AssemblyInfo.cs
 backend/EVRentalSystem/obj/Debug/net9.0/EVRentalSystem.AssemblyInfoInputs.cache
 backend/EVRentalSystem/obj/Debug/net9.0/EVRentalSystem.assets.cache
 backend/EVRentalSystem/obj/Debug/net9.0/EVRentalSystem.GeneratedMSBuildEditorConfig.editorconfig
+backend/EVRentalSystem/bin/
+backend/EVRentalSystem/obj/
