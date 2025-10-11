@@ -7,30 +7,27 @@ using Microsoft.EntityFrameworkCore;
 namespace EVRentalSystem.Models;
 
 [Table("Payment")]
+[Index("order_id", Name = "IX_Payment_order_id")]
 public partial class Payment
 {
     [Key]
-    [Column("payment_id")]
-    public int PaymentId { get; set; }
+    public int payment_id { get; set; }
 
-    [Column("order_id")]
-    public int OrderId { get; set; }
+    public int order_id { get; set; }
 
-    [Column("amount", TypeName = "decimal(12, 2)")]
-    public decimal Amount { get; set; }
+    [Column(TypeName = "decimal(12, 2)")]
+    public decimal amount { get; set; }
 
-    [Column("payment_method")]
     [StringLength(50)]
-    public string? PaymentMethod { get; set; }
+    public string payment_method { get; set; } = null!;
 
-    [Column("payment_date")]
-    public DateTime? PaymentDate { get; set; }
+    [Precision(3)]
+    public DateTime payment_date { get; set; }
 
-    [Column("external_ref")]
     [StringLength(255)]
-    public string? ExternalRef { get; set; }
+    public string? external_ref { get; set; }
 
-    [ForeignKey("OrderId")]
+    [ForeignKey("order_id")]
     [InverseProperty("Payments")]
-    public virtual RentalOrder Order { get; set; } = null!;
+    public virtual RentalOrder order { get; set; } = null!;
 }

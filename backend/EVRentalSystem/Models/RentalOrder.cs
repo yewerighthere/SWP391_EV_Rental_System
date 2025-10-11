@@ -7,76 +7,75 @@ using Microsoft.EntityFrameworkCore;
 namespace EVRentalSystem.Models;
 
 [Table("RentalOrder")]
-[Index("RenterId", Name = "IDX_RentalOrder_Renter")]
+[Index("pickup_station_id", Name = "IX_RentalOrder_pickup_station_id")]
+[Index("renter_id", Name = "IX_RentalOrder_renter_id")]
+[Index("return_station_id", Name = "IX_RentalOrder_return_station_id")]
+[Index("vehicle_id", Name = "IX_RentalOrder_vehicle_id")]
 public partial class RentalOrder
 {
     [Key]
-    [Column("order_id")]
-    public int OrderId { get; set; }
+    public int order_id { get; set; }
 
-    [Column("renter_id")]
-    public int RenterId { get; set; }
+    public int renter_id { get; set; }
 
-    [Column("vehicle_id")]
-    public int VehicleId { get; set; }
+    public int vehicle_id { get; set; }
 
-    [Column("pickup_station_id")]
-    public int? PickupStationId { get; set; }
+    public int? pickup_station_id { get; set; }
 
-    [Column("return_station_id")]
-    public int? ReturnStationId { get; set; }
+    public int? return_station_id { get; set; }
 
-    [Column("start_time")]
-    public DateTime StartTime { get; set; }
+    [Precision(3)]
+    public DateTime start_time { get; set; }
 
-    [Column("end_time")]
-    public DateTime? EndTime { get; set; }
+    [Precision(3)]
+    public DateTime? end_time { get; set; }
 
-    [Column("total_amount", TypeName = "decimal(12, 2)")]
-    public decimal? TotalAmount { get; set; }
+    [Column(TypeName = "decimal(12, 2)")]
+    public decimal total_amount { get; set; }
 
-    [Column("deposit_amount", TypeName = "decimal(12, 2)")]
-    public decimal? DepositAmount { get; set; }
+    [Column(TypeName = "decimal(12, 2)")]
+    public decimal deposit_amount { get; set; }
 
-    [Column("payment_status")]
     [StringLength(20)]
-    public string? PaymentStatus { get; set; }
+    public string payment_status { get; set; } = null!;
 
-    [Column("status")]
     [StringLength(50)]
-    public string? Status { get; set; }
+    public string status { get; set; } = null!;
 
-    [Column("created_at")]
-    public DateTime? CreatedAt { get; set; }
+    [StringLength(255)]
+    public string? img_vehicle_before_URL { get; set; }
 
-    [InverseProperty("Order")]
+    [StringLength(255)]
+    public string? img_vehicle_after_URL { get; set; }
+
+    [Precision(3)]
+    public DateTime created_at { get; set; }
+
+    [InverseProperty("order")]
     public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
 
-    [InverseProperty("Order")]
-    public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    [InverseProperty("order")]
+    public virtual Contract? Contract { get; set; }
 
-    [InverseProperty("Order")]
+    [InverseProperty("order")]
     public virtual ICollection<ExtraFee> ExtraFees { get; set; } = new List<ExtraFee>();
 
-    [InverseProperty("Order")]
-    public virtual ICollection<Handover> Handovers { get; set; } = new List<Handover>();
-
-    [InverseProperty("Order")]
+    [InverseProperty("order")]
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    [ForeignKey("PickupStationId")]
-    [InverseProperty("RentalOrderPickupStations")]
-    public virtual Station? PickupStation { get; set; }
+    [ForeignKey("pickup_station_id")]
+    [InverseProperty("RentalOrderpickup_stations")]
+    public virtual Station? pickup_station { get; set; }
 
-    [ForeignKey("RenterId")]
+    [ForeignKey("renter_id")]
     [InverseProperty("RentalOrders")]
-    public virtual Renter Renter { get; set; } = null!;
+    public virtual Renter renter { get; set; } = null!;
 
-    [ForeignKey("ReturnStationId")]
-    [InverseProperty("RentalOrderReturnStations")]
-    public virtual Station? ReturnStation { get; set; }
+    [ForeignKey("return_station_id")]
+    [InverseProperty("RentalOrderreturn_stations")]
+    public virtual Station? return_station { get; set; }
 
-    [ForeignKey("VehicleId")]
+    [ForeignKey("vehicle_id")]
     [InverseProperty("RentalOrders")]
-    public virtual Vehicle Vehicle { get; set; } = null!;
+    public virtual Vehicle vehicle { get; set; } = null!;
 }

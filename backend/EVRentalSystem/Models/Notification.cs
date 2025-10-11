@@ -10,22 +10,18 @@ namespace EVRentalSystem.Models;
 public partial class Notification
 {
     [Key]
-    [Column("notification_id")]
-    public int NotificationId { get; set; }
+    public int notification_id { get; set; }
 
-    [Column("user_id")]
-    public int UserId { get; set; }
+    public int user_id { get; set; }
 
-    [Column("message")]
-    public string? Message { get; set; }
+    public string message { get; set; } = null!;
 
-    [Column("is_read")]
-    public bool? IsRead { get; set; }
+    public bool is_read { get; set; }
 
-    [Column("created_at")]
-    public DateTime? CreatedAt { get; set; }
+    [Precision(3)]
+    public DateTime created_at { get; set; }
 
-    [ForeignKey("UserId")]
+    [ForeignKey("user_id")]
     [InverseProperty("Notifications")]
-    public virtual User User { get; set; } = null!;
+    public virtual User user { get; set; } = null!;
 }

@@ -6,36 +6,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EVRentalSystem.Models;
 
+[Index("user_id", Name = "UQ__Staff__B9BE370EF13222F0", IsUnique = true)]
 public partial class Staff
 {
     [Key]
-    [Column("staff_id")]
-    public int StaffId { get; set; }
+    public int staff_id { get; set; }
 
-    [Column("user_id")]
-    public int UserId { get; set; }
+    public int user_id { get; set; }
 
-    [Column("position")]
-    [StringLength(50)]
-    public string Position { get; set; } = null!;
+    public int? station_id { get; set; }
 
-    [Column("station_id")]
-    public int? StationId { get; set; }
+    [InverseProperty("staff")]
+    public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
 
-    [Column("hire_date")]
-    public DateTime HireDate { get; set; }
-
-    [InverseProperty("ResolveByStaff")]
-    public virtual ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
-
+    [ForeignKey("station_id")]
     [InverseProperty("Staff")]
-    public virtual ICollection<Handover> Handovers { get; set; } = new List<Handover>();
+    public virtual Station? station { get; set; }
 
-    [ForeignKey("StationId")]
+    [ForeignKey("user_id")]
     [InverseProperty("Staff")]
-    public virtual Station? Station { get; set; }
-
-    [ForeignKey("UserId")]
-    [InverseProperty("Staff")]
-    public virtual User User { get; set; } = null!;
+    public virtual User user { get; set; } = null!;
 }

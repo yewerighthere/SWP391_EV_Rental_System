@@ -7,29 +7,27 @@ using Microsoft.EntityFrameworkCore;
 namespace EVRentalSystem.Models;
 
 [Table("ExtraFee")]
+[Index("FeeType_id", Name = "IX_ExtraFee_FeeType_id")]
+[Index("order_id", Name = "IX_ExtraFee_order_id")]
 public partial class ExtraFee
 {
     [Key]
-    [Column("fee_id")]
-    public int FeeId { get; set; }
+    public int fee_id { get; set; }
 
-    [Column("order_id")]
-    public int OrderId { get; set; }
+    public int order_id { get; set; }
 
-    [Column("fee_type")]
-    [StringLength(100)]
-    public string? FeeType { get; set; }
+    public int FeeType_id { get; set; }
 
-    [Column("amount", TypeName = "decimal(12, 2)")]
-    public decimal? Amount { get; set; }
+    public string? description { get; set; }
 
-    [Column("description")]
-    public string? Description { get; set; }
+    [Precision(3)]
+    public DateTime created_at { get; set; }
 
-    [Column("created_at")]
-    public DateTime? CreatedAt { get; set; }
-
-    [ForeignKey("OrderId")]
+    [ForeignKey("FeeType_id")]
     [InverseProperty("ExtraFees")]
-    public virtual RentalOrder Order { get; set; } = null!;
+    public virtual FeeType FeeType { get; set; } = null!;
+
+    [ForeignKey("order_id")]
+    [InverseProperty("ExtraFees")]
+    public virtual RentalOrder order { get; set; } = null!;
 }

@@ -10,42 +10,37 @@ namespace EVRentalSystem.Models;
 public partial class Station
 {
     [Key]
-    [Column("station_id")]
-    public int StationId { get; set; }
+    public int station_id { get; set; }
 
-    [Column("station_name")]
     [StringLength(255)]
-    public string StationName { get; set; } = null!;
+    public string station_name { get; set; } = null!;
 
-    [Column("address")]
     [StringLength(500)]
-    public string Address { get; set; } = null!;
+    public string address { get; set; } = null!;
 
-    [Column("latitude", TypeName = "decimal(10, 8)")]
-    public decimal? Latitude { get; set; }
+    [Column(TypeName = "decimal(10, 8)")]
+    public decimal? latitude { get; set; }
 
-    [Column("longitude", TypeName = "decimal(11, 8)")]
-    public decimal? Longitude { get; set; }
+    [Column(TypeName = "decimal(11, 8)")]
+    public decimal? longitude { get; set; }
 
-    [Column("status")]
     [StringLength(10)]
-    public string Status { get; set; } = null!;
+    public string status { get; set; } = null!;
 
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; }
+    public int capacity { get; set; }
 
-    [Column("capacity")]
-    public int Capacity { get; set; }
+    [Precision(3)]
+    public DateTime created_at { get; set; }
 
-    [InverseProperty("PickupStation")]
-    public virtual ICollection<RentalOrder> RentalOrderPickupStations { get; set; } = new List<RentalOrder>();
+    [InverseProperty("pickup_station")]
+    public virtual ICollection<RentalOrder> RentalOrderpickup_stations { get; set; } = new List<RentalOrder>();
 
-    [InverseProperty("ReturnStation")]
-    public virtual ICollection<RentalOrder> RentalOrderReturnStations { get; set; } = new List<RentalOrder>();
+    [InverseProperty("return_station")]
+    public virtual ICollection<RentalOrder> RentalOrderreturn_stations { get; set; } = new List<RentalOrder>();
 
-    [InverseProperty("Station")]
+    [InverseProperty("station")]
     public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
 
-    [InverseProperty("Station")]
+    [InverseProperty("station")]
     public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 }

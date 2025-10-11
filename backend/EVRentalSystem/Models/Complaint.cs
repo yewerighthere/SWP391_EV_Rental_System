@@ -7,43 +7,32 @@ using Microsoft.EntityFrameworkCore;
 namespace EVRentalSystem.Models;
 
 [Table("Complaint")]
+[Index("order_id", Name = "IX_Complaint_order_id")]
 public partial class Complaint
 {
     [Key]
-    [Column("complaint_id")]
-    public int ComplaintId { get; set; }
+    public int complaint_id { get; set; }
 
-    [Column("renter_id")]
-    public int RenterId { get; set; }
+    public int renter_id { get; set; }
 
-    [Column("order_id")]
-    public int? OrderId { get; set; }
+    public int? order_id { get; set; }
 
-    [Column("description")]
-    public string? Description { get; set; }
+    public string? description { get; set; }
 
-    [Column("created_date")]
-    public DateTime? CreatedDate { get; set; }
+    [Precision(3)]
+    public DateTime created_date { get; set; }
 
-    [Column("resolve_date")]
-    public DateTime? ResolveDate { get; set; }
+    [Precision(3)]
+    public DateTime? resolve_date { get; set; }
 
-    [Column("resolve_by_staff_id")]
-    public int? ResolveByStaffId { get; set; }
-
-    [Column("status")]
     [StringLength(50)]
-    public string? Status { get; set; }
+    public string status { get; set; } = null!;
 
-    [ForeignKey("OrderId")]
+    [ForeignKey("order_id")]
     [InverseProperty("Complaints")]
-    public virtual RentalOrder? Order { get; set; }
+    public virtual RentalOrder? order { get; set; }
 
-    [ForeignKey("RenterId")]
+    [ForeignKey("renter_id")]
     [InverseProperty("Complaints")]
-    public virtual Renter Renter { get; set; } = null!;
-
-    [ForeignKey("ResolveByStaffId")]
-    [InverseProperty("Complaints")]
-    public virtual Staff? ResolveByStaff { get; set; }
+    public virtual Renter renter { get; set; } = null!;
 }

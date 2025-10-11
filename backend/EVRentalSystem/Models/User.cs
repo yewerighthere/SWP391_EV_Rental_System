@@ -6,56 +6,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EVRentalSystem.Models;
 
-[Index("Email", Name = "UQ__Users__AB6E616438012D84", IsUnique = true)]
+[Index("email", Name = "UQ__Users__AB6E6164450F326E", IsUnique = true)]
 public partial class User
 {
     [Key]
-    [Column("user_id")]
-    public int UserId { get; set; }
+    public int user_id { get; set; }
 
-    [Column("full_name")]
     [StringLength(255)]
-    public string FullName { get; set; } = null!;
+    public string full_name { get; set; } = null!;
 
-    [Column("user_name")]
     [StringLength(255)]
-    public string UserName { get; set; } = null!;
+    public string email { get; set; } = null!;
 
-    [Column("email")]
-    [StringLength(255)]
-    public string Email { get; set; } = null!;
-
-    [Column("phone_number")]
     [StringLength(20)]
-    public string? PhoneNumber { get; set; }
+    public string? phone_number { get; set; }
 
-    [Column("role")]
     [StringLength(10)]
-    public string Role { get; set; } = null!;
+    public string role { get; set; } = null!;
 
-    [Column("status")]
     [StringLength(10)]
-    public string Status { get; set; } = null!;
+    public string status { get; set; } = null!;
 
-    [Column("password_hash")]
     [StringLength(255)]
-    public string PasswordHash { get; set; } = null!;
+    public string password_hash { get; set; } = null!;
 
-    [Column("last_login")]
-    public DateTime? LastLogin { get; set; }
+    public DateOnly date_of_birth { get; set; }
 
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; }
+    [Precision(3)]
+    public DateTime? last_login { get; set; }
 
-    [InverseProperty("User")]
-    public virtual ICollection<LogHistory> LogHistories { get; set; } = new List<LogHistory>();
+    [Precision(3)]
+    public DateTime created_at { get; set; }
 
-    [InverseProperty("User")]
+    [InverseProperty("user")]
+    public virtual ICollection<Log_History> Log_Histories { get; set; } = new List<Log_History>();
+
+    [InverseProperty("user")]
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-    [InverseProperty("User")]
-    public virtual ICollection<Renter> Renters { get; set; } = new List<Renter>();
+    [InverseProperty("user")]
+    public virtual Renter? Renter { get; set; }
 
-    [InverseProperty("User")]
-    public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
+    [InverseProperty("user")]
+    public virtual Staff? Staff { get; set; }
 }

@@ -7,26 +7,27 @@ using Microsoft.EntityFrameworkCore;
 namespace EVRentalSystem.Models;
 
 [Table("Contract")]
+[Index("order_id", Name = "UQ__Contract__465962289047D7E8", IsUnique = true)]
 public partial class Contract
 {
     [Key]
-    [Column("contract_id")]
-    public int ContractId { get; set; }
+    public int contract_id { get; set; }
 
-    [Column("order_id")]
-    public int OrderId { get; set; }
+    public int staff_id { get; set; }
 
-    [Column("signed_date")]
-    public DateTime? SignedDate { get; set; }
+    public int order_id { get; set; }
 
-    [Column("contract_content")]
-    public string? ContractContent { get; set; }
+    [Precision(3)]
+    public DateTime signed_date { get; set; }
 
-    [Column("contract_pdf_url")]
     [StringLength(255)]
-    public string? ContractPdfUrl { get; set; }
+    public string? contract_pdf_url { get; set; }
 
-    [ForeignKey("OrderId")]
+    [ForeignKey("order_id")]
+    [InverseProperty("Contract")]
+    public virtual RentalOrder order { get; set; } = null!;
+
+    [ForeignKey("staff_id")]
     [InverseProperty("Contracts")]
-    public virtual RentalOrder Order { get; set; } = null!;
+    public virtual Staff staff { get; set; } = null!;
 }
